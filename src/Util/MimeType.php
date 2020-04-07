@@ -202,8 +202,10 @@ class MimeType
         }
         try {
             $finfo = new finfo(FILEINFO_MIME_TYPE);
-
-            return $finfo->buffer($content) ?: null;
+            // The first 10000 bytes of the file is hopefully enough to guess the mime type,
+            // otherwise if we send the whole file, we might run out of memory depending on 
+            // the file size.
+            return $finfo->buffer(substr($content, 0, 10000)) ?: null;
             // @codeCoverageIgnoreStart
         } catch (ErrorException $e) {
             // This is caused by an array to string conversion error.
